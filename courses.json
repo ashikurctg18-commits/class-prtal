@@ -1,0 +1,123 @@
+{
+  "siteTitle": "ক্লাস পোর্টাল",
+  "subjects": [
+    {
+      "id": "s-ict",
+      "title": "তথ্য ও যোগাযোগ প্রযুক্তি (ICT)",
+      "chapters": [
+        {
+          "id": "ch1",
+          "title": "অধ্যায়-০১: তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত",
+          "lessons": []
+        },
+        {
+          "id": "ch2",
+          "title": "অধ্যায়-০২: কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং",
+          "lessons": []
+        },
+        {
+          "id": "ch3",
+          "title": "অধ্যায়-০৩: সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস",
+          "lessons": []
+        },
+        {
+          "id": "ch4",
+          "title": "অধ্যায়-০৪: ওয়েব ডিজাইন পরিচিতি এবং HTML",
+          "lessons": []
+        },
+        {
+          "id": "ch5",
+          "title": "অধ্যায়-০৫: প্রোগ্রামিং ভাষা",
+          "lessons": [
+            {
+              "id": "c5-1",
+              "title": "Class 01",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/f35e3268-b160-44fd-81e6-8c867bcf1de7?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c5-2",
+              "title": "Class 02",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/45be86e5-241c-4086-b6fd-129fb98857ae?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c5-3",
+              "title": "Class 03",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/29b2dc02-35d2-4782-a138-e0dde6160021?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c5-4",
+              "title": "Class 04",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/90a1e422-112c-4912-a322-8716c5ec5841?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c5-5",
+              "title": "Class 05",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/01b62b12-c84d-4960-8515-7efdaf3b2509?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c5-6",
+              "title": "Class 06",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/9634a2c0-0372-47fd-8a6d-fd267d1681cf?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            }
+          ]
+        },
+        {
+          "id": "ch6",
+          "title": "অধ্যায়-০৬: ডেটাবেজ ম্যানেজমেন্ট সিস্টেম",
+          "lessons": [
+            {
+              "id": "c6-1",
+              "title": "Class 01",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/1e90d0ea-e1f3-4fc0-84db-68136506bfcc?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-2",
+              "title": "Class 02",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/ebf21822-39f8-4b86-bf87-4695fba05c5d?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-3",
+              "title": "Class 03",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/f07207b1-8d3e-4f06-b7c8-b25fa779cd05?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-4",
+              "title": "Class 04",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/72e70472-0368-48f9-9e72-7bc5d993d139?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-5",
+              "title": "Class 05",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/4d8ba17c-82ea-48a0-b795-85781f53e250?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-6",
+              "title": "Class 06",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/3f5b41ed-f996-4e93-913c-6c69a985c287?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-7",
+              "title": "Class 07",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/ad4e1a94-75bd-40a0-8244-1efdea04d741?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-8",
+              "title": "Class 08",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/d6b52c41-196b-49a4-84ee-0f714b7bfa5e?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-9",
+              "title": "Class 09",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/006577bf-171f-494f-9506-8624ce1aaf78?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            },
+            {
+              "id": "c6-10",
+              "title": "Class 10",
+              "url": "https://player.vidinfra.com/67ffe06f-ca94-4c8d-a450-6e7eee26a702/default/61c7d737-a1c4-4e3b-a16c-bb356ab4a45e?autoplay=false&loop=false&muted=false&controls=true&preload=true"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

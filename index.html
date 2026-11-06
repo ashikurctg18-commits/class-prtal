@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ক্লাস পোর্টাল</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Hind+Siliguri:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Anime look: night-sky indigo, halftone dots, speed-line header with falling petals, hard-edged manga panels.
+   Layout: video on the left, subject accordion on the right; stacks on phones. */
+:root{
+  --bg:#0b0820;
+  --panel:#150f3d;
+  --panel-2:#1e1659;
+  --edge:#4b3fb8;
+  --ink:#05031a;
+  --fg:#f4f1ff;
+  --muted:#a9a1d9;
+  --pink:#ff5fa2;
+  --cyan:#3be8ff;
+  --yellow:#ffd23f;
+  --violet:#8b5cff;
+  --danger:#ff6b7d;
+  --font-display:'Dela Gothic One','Hind Siliguri',system-ui,sans-serif;
+  --font-body:'Hind Siliguri',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-jp:'Zen Maru Gothic','Hind Siliguri',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,.07) 1px, transparent 1.6px) 0 0/16px 16px,
+    radial-gradient(900px 500px at 88% -8%, rgba(139,92,255,.32), transparent 60%),
+    radial-gradient(700px 420px at 0% 35%, rgba(255,95,162,.14), transparent 60%),
+    var(--bg);
+  color:var(--fg);font:16px/1.6 var(--font-body);min-height:100vh;
+}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+
+.wrap{max-width:1280px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+
+/* ----- header ----- */
+.top{position:relative;overflow:hidden;background:linear-gradient(100deg,#e0407f 0%,#6d3df0 55%,#1fb6e0 120%);border-bottom:3px solid var(--ink)}
+.top::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.16) 0 2px,transparent 2px 28px);pointer-events:none}
+.bar{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;flex-wrap:wrap}
+.jp-sub{margin:0;font:700 12px/1 var(--font-jp);letter-spacing:.35em;color:#fff;text-shadow:1px 1px 0 var(--ink)}
+.brand{font:400 26px/1.25 var(--font-display);margin:2px 0 0;color:#fff;text-shadow:3px 3px 0 #2a1070;letter-spacing:.3px;overflow-wrap:anywhere}
+.tag{font-size:13px;font-weight:600;padding:4px 14px;background:var(--ink);color:#fff;border:2px solid #fff;transform:skewX(-10deg)}
+.tag span{display:inline-block;transform:skewX(10deg)}
+.tag.admin{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
+.petals{position:absolute;inset:0;pointer-events:none}
+.petal{position:absolute;top:-20px;left:var(--x);width:10px;height:14px;background:#ffd6e8;border-radius:80% 0 80% 0;opacity:.85;animation:fall var(--d) linear var(--delay) infinite}
+@keyframes fall{0%{transform:translate(0,-20px) rotate(0)}100%{transform:translate(46px,130px) rotate(320deg)}}
+
+/* ----- layout ----- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:28px;padding-block:28px}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+
+/* ----- player ----- */
+.frame{aspect-ratio:16/9;max-width:100%;background:#000;overflow:hidden;border:3px solid var(--pink);border-radius:6px;box-shadow:7px 7px 0 var(--cyan)}
+.frame iframe{width:100%;height:100%;border:0;display:block}
+.empty{display:grid;place-items:center;height:100%;padding:24px;text-align:center;color:var(--muted);background:var(--panel)}
+
+.lesson-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 16px}
+.lesson-head h1{font-size:24px;font-weight:700;line-height:1.35;margin:0;min-width:0;overflow-wrap:anywhere}
+.crumb{font-size:14px;color:var(--cyan);margin:0 0 2px;overflow-wrap:anywhere}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.btn{border:2px solid var(--edge);background:var(--panel-2);border-radius:6px;padding:7px 14px;font-weight:600;transition:transform .12s,box-shadow .12s,border-color .12s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--cyan);border-color:var(--cyan)}
+.btn:active{transform:none;box-shadow:none}
+.btn.primary{background:linear-gradient(135deg,#ff5fa2,#ff8a5f);border-color:#ffd0e3;color:#2a0716}
+.btn.primary:hover{box-shadow:3px 3px 0 var(--yellow);border-color:#fff}
+.btn.danger{color:var(--danger)}
+.btn.danger:hover{border-color:var(--danger);box-shadow:3px 3px 0 var(--danger)}
+.btn.small{padding:2px 9px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.done{border-color:var(--cyan);color:var(--cyan);background:rgba(59,232,255,.1)}
+
+.note{margin-top:22px;border:2px solid var(--edge);background:var(--panel);border-radius:6px;box-shadow:5px 5px 0 var(--ink);overflow:hidden}
+.note h2{margin:0;padding:12px 18px;font:400 17px/1.3 var(--font-display);color:var(--yellow);background:var(--panel-2);border-bottom:2px solid var(--edge)}
+.note p{margin:0;padding:14px 18px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* ----- sidebar ----- */
+.side{min-width:0}
+.side-box{border:2px solid var(--edge);background:var(--panel);border-radius:6px;box-shadow:6px 6px 0 var(--ink);padding:12px}
+@media (min-width:901px){.side-box{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}}
+.side-title{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding:0 4px 10px;border-bottom:2px dashed var(--edge);font:400 17px/1.3 var(--font-display)}
+.side-title .star{color:var(--yellow)}
+.side-title .jp{margin-left:auto;font:700 12px/1 var(--font-jp);letter-spacing:.25em;color:var(--muted)}
+
+.subject{border-bottom:1px solid var(--edge)}
+.subject:last-child{border-bottom:0}
+.sub-btn{width:100%;display:flex;align-items:center;gap:10px;background:none;border:0;padding:12px 4px;text-align:left;line-height:1.35}
+.sub-ico{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:6px;border:2px solid var(--ink);font-size:12px;color:var(--ink)}
+.sub-ico.c0{background:var(--violet)}
+.sub-ico.c1{background:var(--pink)}
+.sub-ico.c2{background:var(--cyan)}
+.sub-ico.c3{background:var(--yellow)}
+.sub-name{flex:1;min-width:0;font-weight:700;font-size:17px;overflow-wrap:anywhere}
+.sub-btn[aria-expanded="true"] .sub-name{color:var(--yellow)}
+.now{flex:none;font-size:11px;font-weight:700;padding:1px 9px;border:2px solid var(--cyan);color:var(--cyan);border-radius:99px}
+.count{flex:none;color:var(--muted);font-size:14px}
+.chev{flex:none;color:var(--cyan);transition:transform .15s}
+[aria-expanded="true"]>.chev{transform:rotate(180deg)}
+
+.sub-body{margin:0 0 10px 18px;padding-left:12px;border-left:2px dashed var(--edge)}
+.ch-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:0;padding:9px 2px;text-align:left;font-weight:600;line-height:1.4;overflow-wrap:anywhere}
+.ch-btn[aria-expanded="true"]{color:var(--cyan)}
+.lessons{list-style:none;margin:0;padding:0 0 6px}
+.lesson{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;flex-wrap:wrap;border-left:4px solid transparent}
+.lesson.active{background:rgba(255,95,162,.14);border-left-color:var(--pink)}
+.lesson .play{flex:none;color:var(--pink);background:none;border:0;padding:4px;display:flex;font-size:13px}
+.lesson .name{flex:1 1 110px;min-width:0;text-align:left;background:none;border:0;padding:5px 4px;color:var(--muted);overflow-wrap:anywhere}
+.lesson.active .name,.lesson .name:hover{color:var(--fg)}
+.badge{flex:none;font-size:12px;padding:1px 10px;border-radius:99px;background:var(--panel-2);border:1px solid var(--edge);color:var(--muted)}
+.none{padding:4px 6px 10px;color:var(--muted);font-size:14px;margin:0}
+.row-tools{display:flex;gap:4px;flex:none;flex-wrap:wrap}
+.add-row{padding:2px 2px 10px;display:flex;gap:8px;flex-wrap:wrap}
+
+.draftbar{border:2px solid var(--yellow);background:rgba(255,210,63,.09);border-radius:6px;padding:12px 16px;margin:0 0 32px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.draftbar p{margin:0;font-size:15px;flex:1 1 260px}
+
+dialog{background:var(--panel);color:var(--fg);border:3px solid var(--pink);border-radius:6px;box-shadow:7px 7px 0 var(--cyan);padding:0;width:min(520px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(5,3,26,.75)}
+dialog form{padding:20px;display:grid;gap:14px}
+dialog h3{margin:0;font:400 19px/1.3 var(--font-display)}
+label{display:grid;gap:6px;font-size:14px;color:var(--muted)}
+input[type=text],input[type=url],textarea{width:100%;background:var(--bg);border:2px solid var(--edge);border-radius:6px;padding:10px 12px;color:var(--fg)}
+textarea{min-height:90px;resize:vertical}
+.err{color:var(--danger);font-size:14px;margin:0;min-height:1.2em}
+.login{max-width:420px;margin:48px auto;display:grid;gap:14px;padding:22px;background:var(--panel);border:3px solid var(--pink);border-radius:6px;box-shadow:7px 7px 0 var(--cyan)}
+.login h2{margin:0;font:400 20px/1.3 var(--font-display)}
+.login input{width:100%;background:var(--bg);border:2px solid var(--edge);border-radius:6px;padding:10px 12px;color:var(--fg)}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important}
+  .petal{animation:none;opacity:0}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="petals" aria-hidden="true">
+    <span class="petal" style="--x:6%;--d:7s;--delay:0s"></span>
+    <span class="petal" style="--x:19%;--d:9s;--delay:-3s"></span>
+    <span class="petal" style="--x:33%;--d:8s;--delay:-5s"></span>
+    <span class="petal" style="--x:47%;--d:10s;--delay:-1s"></span>
+    <span class="petal" style="--x:61%;--d:7.5s;--delay:-6s"></span>
+    <span class="petal" style="--x:74%;--d:9.5s;--delay:-2s"></span>
+    <span class="petal" style="--x:88%;--d:8.5s;--delay:-4s"></span>
+  </div>
+  <div class="wrap bar">
+    <div>
+      <p class="jp-sub" aria-hidden="true">アカデミー</p>
+      <h1 class="brand" id="brand">ক্লাস পোর্টাল</h1>
+    </div>
+    <span class="tag" id="modeTag"><span>শিক্ষার্থী ভিউ</span></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="layout">
+    <section id="player" aria-live="polite"></section>
+    <aside class="side">
+      <div class="side-box" id="sidebar"></div>
+    </aside>
+  </div>
+  <div id="draft"></div>
+</main>
+
+<dialog id="dlg"><form id="form" method="dialog"></form></dialog>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Data shape: { siteTitle, subjects: [ { id, title, chapters: [ { id, title, lessons: [ { id, title, url, note } ] } ] } ] } */
+  var SEED = {siteTitle:'ক্লাস পোর্টাল', subjects:[]};
+  /* Admin gate: only the SHA-256 hash of the password is stored here, never the password itself. */
+  var ADMIN_HASH = '7e5f5f881653f9194a66d8c9d2d5c4d378f7acc7100ab33d96b7d76c329d5e4e';
+  var wantAdmin = location.hash === '#admin';
+  function authed(){
+    try{return sessionStorage.getItem('adminOk') === ADMIN_HASH}catch(e){return false}
+  }
+  var admin = wantAdmin && authed();
+  async function sha256(text){
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+  }
+  var data = SEED;
+  var state = {subject:null, chapter:null, lesson:null, openS:{}, openC:{}};
+  var dirty = false;
+
+  function uid(){return Math.random().toString(36).slice(2,9)}
+  function h(tag, attrs){
+    var e = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function(k){
+      var v = attrs[k];
+      if(k === 'class') e.className = v;
+      else if(k.slice(0,2) === 'on') e.addEventListener(k.slice(2), v);
+      else if(v === true) e.setAttribute(k,'');
+      else if(v !== false && v != null) e.setAttribute(k, v);
+    });
+    for(var i=2;i<arguments.length;i++){
+      var kids = [].concat(arguments[i]);
+      kids.forEach(function(c){
+        if(c == null || c === false) return;
+        e.append(c.nodeType ? c : document.createTextNode(String(c)));
+      });
+    }
+    return e;
+  }
+
+  /* ---------- storage ---------- */
+  function getWatched(){
+    try{return JSON.parse(localStorage.getItem('watched')||'{}')}catch(e){return {}}
+  }
+  function setWatched(id, val){
+    var w = getWatched();
+    if(val) w[id] = 1; else delete w[id];
+    try{localStorage.setItem('watched', JSON.stringify(w))}catch(e){}
+  }
+  function saveDraft(){
+    dirty = true;
+    try{localStorage.setItem('draft', JSON.stringify(data))}catch(e){}
+  }
+
+  /* Accepts the current format, or the oldest {chapters:[...]} format (wrapped into one subject). */
+  function normalize(d){
+    if(d && Array.isArray(d.subjects)) return d;
+    if(d && Array.isArray(d.chapters)){
+      return {siteTitle:d.siteTitle || SEED.siteTitle, subjects:[{id:'s'+uid(), title:'আমার বিষয়', chapters:d.chapters}]};
+    }
+    return SEED;
+  }
+
+  async function load(){
+    var pub = SEED;
+    try{
+      var r = await fetch('courses.json', {cache:'no-store'});
+      if(r.ok) pub = await r.json();
+    }catch(e){}
+    if(admin){
+      try{
+        var d = localStorage.getItem('draft');
+        if(d){dirty = true; return normalize(JSON.parse(d))}
+      }catch(e){}
+    }
+    return normalize(pub);
+  }
+
+  /* ---------- lookups ---------- */
+  function allLessons(){
+    var out = [];
+    data.subjects.forEach(function(s){
+      s.chapters.forEach(function(c){
+        c.lessons.forEach(function(l){out.push({s:s, c:c, l:l})});
+      });
+    });
+    return out;
+  }
+  function current(){
+    var all = allLessons();
+    return all.filter(function(x){return x.l.id === state.lesson})[0] || null;
+  }
+  function safeUrl(u){
+    try{var x = new URL(u); return x.protocol === 'https:' ? x.href : null}catch(e){return null}
+  }
+  function setCur(sid, cid, lid){
+    state.subject = sid; state.chapter = cid; state.lesson = lid;
+    state.openS[sid] = true; state.openC[cid] = true;
+  }
+  function pickFirst(){
+    var all = allLessons();
+    if(all.length){
+      setCur(all[0].s.id, all[0].c.id, all[0].l.id);
+    }else{
+      state.subject = state.chapter = state.lesson = null;
+      if(data.subjects.length) state.openS[data.subjects[0].id] = true;
+    }
+  }
+  function ensureCurrent(){
+    if(!current()) pickFirst();
+  }
+  function select(sid, cid, lid){
+    setCur(sid, cid, lid);
+    render();
+    var p = document.getElementById('player');
+    if(p && window.innerWidth < 900) p.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function move(arr, i, d){
+    var j = i + d;
+    if(j < 0 || j >= arr.length) return;
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    saveDraft(); render();
+  }
+
+  /* ---------- player ---------- */
+  function renderPlayer(){
+    var box = document.getElementById('player');
+    box.textContent = '';
+    var cur = current();
+    if(!cur){
+      var msg = data.subjects.length
+        ? (admin ? 'এখনো কোনো ক্লাস নেই। ডানের তালিকা থেকে একটি অধ্যায় খুলে "+ ক্লাস যোগ করুন" চাপুন।' : 'ক্লাস শীঘ্রই যোগ করা হবে।')
+        : (admin ? 'এখনো কোনো বিষয় নেই। ডানের তালিকার "+ নতুন বিষয়" চাপুন।' : 'ক্লাস শীঘ্রই যোগ করা হবে।');
+      box.append(h('div',{class:'frame'}, h('div',{class:'empty'}, msg)));
+      return;
+    }
+    var ls = cur.l;
+    var url = safeUrl(ls.url);
+    var frame = h('div',{class:'frame'});
+    if(url){
+      frame.append(h('iframe',{
+        src:url,
+        title:ls.title,
+        allow:'autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope',
+        allowfullscreen:true,
+        referrerpolicy:'strict-origin-when-cross-origin'
+      }));
+    }else{
+      frame.append(h('div',{class:'empty'},'ভিডিও লিংক ঠিক নেই। লিংকটি https:// দিয়ে শুরু হতে হবে।'));
+    }
+
+    var all = allLessons();
+    var idx = all.findIndex(function(x){return x.l.id === ls.id});
+    var watched = !!getWatched()[ls.id];
+
+    var doneBtn = h('button',{class:'btn'+(watched?' done':''), type:'button', onclick:function(){
+      setWatched(ls.id, !getWatched()[ls.id]); render();
+    }}, watched ? 'Watched ✓' : 'Watched চিহ্নিত করুন');
+    var prev = h('button',{class:'btn', type:'button', disabled:idx<=0, onclick:function(){
+      var p = all[idx-1]; if(p) select(p.s.id, p.c.id, p.l.id);
+    }}, '← আগের ক্লাস');
+    var next = h('button',{class:'btn primary', type:'button', disabled:idx>=all.length-1, onclick:function(){
+      setWatched(ls.id, true);
+      var n = all[idx+1]; if(n) select(n.s.id, n.c.id, n.l.id);
+    }}, 'পরের ক্লাস →');
+
+    box.append(
+      frame,
+      h('div',{class:'lesson-head'},
+        h('div',{style:'min-width:0'},
+          h('p',{class:'crumb'}, cur.s.title + ' › ' + cur.c.title),
+          h('h1',{}, ls.title)),
+        h('div',{class:'actions'}, prev, doneBtn, next)
+      )
+    );
+    if(ls.note){
+      box.append(h('div',{class:'note'}, h('h2',{}, 'CQ + MCQ Revision Note'), h('p',{}, ls.note)));
+    }
+  }
+
+  /* ---------- sidebar: subject > chapter > class ---------- */
+  function renderSidebar(){
+    var sb = document.getElementById('sidebar');
+    sb.textContent = '';
+    var w = getWatched();
+
+    sb.append(h('h2',{class:'side-title'},
+      h('span',{class:'star','aria-hidden':'true'}, '✦'),
+      'কোর্স তালিকা',
+      h('span',{class:'jp','aria-hidden':'true'}, 'コース')));
+
+    if(admin){
+      sb.append(h('div',{class:'add-row'},
+        h('button',{class:'btn primary small', type:'button', onclick:function(){subjectDialog()}}, '+ নতুন বিষয়')));
+    }
+    if(!data.subjects.length){
+      sb.append(h('p',{class:'none'}, admin ? 'এখনো কোনো বিষয় নেই। "+ নতুন বিষয়" চাপুন।' : 'ক্লাস শীঘ্রই যোগ করা হবে।'));
+    }
+
+    data.subjects.forEach(function(sj, si){
+      var open = !!state.openS[sj.id];
+      var count = sj.chapters.reduce(function(n,c){return n + c.lessons.length}, 0);
+      var head = h('button',{class:'sub-btn', type:'button', 'aria-expanded':String(open), onclick:function(){
+        state.openS[sj.id] = !state.openS[sj.id]; renderSidebar();
+      }},
+        h('span',{class:'sub-ico c'+(si%4), 'aria-hidden':'true'}, '▶'),
+        h('span',{class:'sub-name'}, sj.title),
+        sj.id === state.subject ? h('span',{class:'now'}, 'Now playing') : null,
+        h('span',{class:'count'}, String(count)),
+        h('span',{class:'chev','aria-hidden':'true'}, '▾'));
+      var el = h('div',{class:'subject'}, head);
+
+      if(open){
+        var body = h('div',{class:'sub-body'});
+        if(admin){
+          body.append(h('div',{class:'add-row'},
+            h('button',{class:'btn small', type:'button', 'aria-label':'বিষয় উপরে', onclick:function(){move(data.subjects, si, -1)}}, '↑'),
+            h('button',{class:'btn small', type:'button', 'aria-label':'বিষয় নিচে', onclick:function(){move(data.subjects, si, 1)}}, '↓'),
+            h('button',{class:'btn small', type:'button', onclick:function(){subjectDialog(sj)}}, 'নাম বদলান'),
+            h('button',{class:'btn small danger', type:'button', onclick:function(){
+              if(!window.confirm('"' + sj.title + '" বিষয় ও এর সব অধ্যায়-ক্লাস মুছে ফেলবেন?')) return;
+              data.subjects.splice(si,1); saveDraft(); ensureCurrent(); render();
+            }}, 'বিষয় মুছুন'),
+            h('button',{class:'btn primary small', type:'button', onclick:function(){chapterDialog(sj)}}, '+ নতুন অধ্যায়')
+          ));
+        }
+        if(!sj.chapters.length) body.append(h('p',{class:'none'}, 'এই বিষয়ে এখনো কোনো অধ্যায় নেই।'));
+
+        sj.chapters.forEach(function(ch, ci){
+          var copen = !!state.openC[ch.id];
+          var chead = h('button',{class:'ch-btn', type:'button', 'aria-expanded':String(copen), onclick:function(){
+            state.openC[ch.id] = !state.openC[ch.id]; renderSidebar();
+          }}, h('span',{}, ch.title), h('span',{class:'chev','aria-hidden':'true'}, '▾'));
+          var cel = h('div',{class:'chapter'}, chead);
+
+          if(copen){
+            if(admin){
+              cel.append(h('div',{class:'add-row'},
+                h('button',{class:'btn small', type:'button', 'aria-label':'অধ্যায় উপরে', onclick:function(){move(sj.chapters, ci, -1)}}, '↑'),
+                h('button',{class:'btn small', type:'button', 'aria-label':'অধ্যায় নিচে', onclick:function(){move(sj.chapters, ci, 1)}}, '↓'),
+                h('button',{class:'btn small', type:'button', onclick:function(){chapterDialog(sj, ch)}}, 'অধ্যায় সম্পাদনা'),
+                h('button',{class:'btn small danger', type:'button', onclick:function(){
+                  if(!window.confirm('"' + ch.title + '" অধ্যায় ও এর সব ক্লাস মুছে ফেলবেন?')) return;
+                  sj.chapters.splice(ci,1); saveDraft(); ensureCurrent(); render();
+                }}, 'মুছুন')
+              ));
+            }
+            var ul = h('ul',{class:'lessons'});
+            if(!ch.lessons.length) ul.append(h('li',{class:'none'}, 'এই অধ্যায়ে এখনো ক্লাস নেই।'));
+            ch.lessons.forEach(function(ls, li){
+              var active = ls.id === state.lesson;
+              var row = h('li',{class:'lesson'+(active?' active':'')},
+                h('button',{class:'play', type:'button', 'aria-label':'চালু করুন', onclick:function(){select(sj.id, ch.id, ls.id)}},
+                  h('span',{'aria-hidden':'true'}, '▶')),
+                h('button',{class:'name', type:'button', onclick:function(){select(sj.id, ch.id, ls.id)}}, ls.title),
+                w[ls.id] ? h('span',{class:'badge'}, 'Watched') : null
+              );
+              if(admin){
+                row.append(h('span',{class:'row-tools'},
+                  h('button',{class:'btn small', type:'button', 'aria-label':'উপরে', onclick:function(){move(ch.lessons, li, -1)}}, '↑'),
+                  h('button',{class:'btn small', type:'button', 'aria-label':'নিচে', onclick:function(){move(ch.lessons, li, 1)}}, '↓'),
+                  h('button',{class:'btn small', type:'button', onclick:function(){lessonDialog(sj, ch, ls)}}, 'সম্পাদনা'),
+                  h('button',{class:'btn small danger', type:'button', 'aria-label':'মুছুন', onclick:function(){
+                    if(!window.confirm('"' + ls.title + '" ক্লাসটি মুছে ফেলবেন?')) return;
+                    ch.lessons.splice(li,1); saveDraft(); ensureCurrent(); render();
+                  }}, '✕')
+                ));
+              }
+              ul.append(row);
+            });
+            cel.append(ul);
+            if(admin){
+              cel.append(h('div',{class:'add-row'},
+                h('button',{class:'btn primary small', type:'button', onclick:function(){lessonDialog(sj, ch)}}, '+ ক্লাস যোগ করুন')));
+            }
+          }
+          body.append(cel);
+        });
+        el.append(body);
+      }
+      sb.append(el);
+    });
+  }
+
+  /* ---------- admin draft bar ---------- */
+  function renderDraft(){
+    var box = document.getElementById('draft');
+    box.textContent = '';
+    if(!admin) return;
+    box.append(h('div',{class:'draftbar'},
+      h('p',{}, dirty
+        ? 'আপনার পরিবর্তন শুধু এই ব্রাউজারে সেভ আছে। সবাইকে দেখাতে courses.json ডাউনলোড করে হোস্টিংয়ে index.html এর পাশে আগের ফাইলটির জায়গায় আপলোড করুন।'
+        : 'অ্যাডমিন মোড চালু। বিষয়, অধ্যায় বা ক্লাস যোগ করলে এখান থেকে courses.json ডাউনলোড করতে পারবেন।'),
+      h('div',{class:'actions'},
+        h('button',{class:'btn primary', type:'button', onclick:exportJson}, 'courses.json ডাউনলোড'),
+        h('button',{class:'btn', type:'button', onclick:function(){
+          openDialog('সাইটের নাম',
+            [{key:'title', label:'সাইটের নাম', value:data.siteTitle || ''}],
+            function(v){
+              if(!v.title) return 'নাম লিখুন।';
+              data.siteTitle = v.title; saveDraft(); render();
+            });
+        }}, 'সাইটের নাম'),
+        h('button',{class:'btn danger', type:'button', onclick:function(){
+          if(!window.confirm('এই ব্রাউজারের ড্রাফট মুছে লাইভ courses.json এ ফিরে যাবেন?')) return;
+          try{localStorage.removeItem('draft')}catch(e){}
+          location.reload();
+        }}, 'ড্রাফট রিসেট'),
+        h('button',{class:'btn', type:'button', onclick:function(){
+          try{sessionStorage.removeItem('adminOk')}catch(e){}
+          location.hash = '';
+        }}, 'লগআউট')
+      )
+    ));
+  }
+  function exportJson(){
+    var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'courses.json';
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)}, 2000);
+  }
+
+  /* ---------- dialogs ---------- */
+  var dlg = document.getElementById('dlg');
+  var form = document.getElementById('form');
+
+  function openDialog(title, fields, onSave){
+    form.textContent = '';
+    var errEl = h('p',{class:'err', role:'alert'});
+    form.append(h('h3',{}, title));
+    var inputs = {};
+    fields.forEach(function(f){
+      var inp = f.multiline
+        ? h('textarea',{id:'f_'+f.key, placeholder:f.placeholder||''})
+        : h('input',{id:'f_'+f.key, type:f.type||'text', placeholder:f.placeholder||'', autocomplete:'off'});
+      inp.value = f.value || '';
+      inputs[f.key] = inp;
+      form.append(h('label',{for:'f_'+f.key}, f.label, inp));
+    });
+    form.append(errEl,
+      h('div',{class:'dlg-actions'},
+        h('button',{class:'btn', type:'button', onclick:function(){dlg.close()}}, 'বাতিল'),
+        h('button',{class:'btn primary', type:'submit'}, 'সেভ')));
+    form.onsubmit = function(e){
+      e.preventDefault();
+      var vals = {};
+      Object.keys(inputs).forEach(function(k){vals[k] = inputs[k].value.trim()});
+      var msg = onSave(vals);
+      if(msg){errEl.textContent = msg; return}
+      dlg.close();
+    };
+    dlg.showModal();
+    var first = form.querySelector('input,textarea'); if(first) first.focus();
+  }
+
+  function subjectDialog(sj){
+    openDialog(sj ? 'বিষয়ের নাম বদলান' : 'নতুন বিষয়',
+      [{key:'title', label:'বিষয়ের নাম', value: sj ? sj.title : '', placeholder:'যেমন: Physics (Chinmoy Saha)'}],
+      function(v){
+        if(!v.title) return 'বিষয়ের নাম লিখুন।';
+        if(sj) sj.title = v.title;
+        else{
+          var n = {id:'s'+uid(), title:v.title, chapters:[]};
+          data.subjects.push(n); state.openS[n.id] = true;
+        }
+        saveDraft(); render();
+      });
+  }
+
+  function chapterDialog(sj, ch){
+    openDialog(ch ? 'অধ্যায় সম্পাদনা' : 'নতুন অধ্যায়',
+      [{key:'title', label:'অধ্যায়ের নাম', value: ch ? ch.title : '', placeholder:'অধ্যায়-০৭: ...'}],
+      function(v){
+        if(!v.title) return 'অধ্যায়ের নাম লিখুন।';
+        if(ch) ch.title = v.title;
+        else{
+          var n = {id:uid(), title:v.title, lessons:[]};
+          sj.chapters.push(n); state.openS[sj.id] = true; state.openC[n.id] = true;
+        }
+        saveDraft(); ensureCurrent(); render();
+      });
+  }
+
+  function lessonDialog(sj, ch, ls){
+    openDialog(ls ? 'ক্লাস সম্পাদনা' : 'নতুন ক্লাস',
+      [
+        {key:'title', label:'ক্লাসের নাম', value: ls ? ls.title : '', placeholder:'Lecture 02'},
+        {key:'url', label:'ভিডিও লিংক (vidinfra player link)', type:'url', value: ls ? ls.url : '', placeholder:'https://player.vidinfra.com/...'},
+        {key:'note', label:'নোট (ঐচ্ছিক)', multiline:true, value: ls ? (ls.note||'') : '', placeholder:'ক্লাসের নিচে যে নোট দেখাবে'}
+      ],
+      function(v){
+        if(!v.title) return 'ক্লাসের নাম লিখুন।';
+        if(!safeUrl(v.url)) return 'সঠিক ভিডিও লিংক দিন (https:// দিয়ে শুরু)।';
+        if(ls){ls.title = v.title; ls.url = v.url; ls.note = v.note}
+        else{
+          var n = {id:uid(), title:v.title, url:v.url, note:v.note};
+          ch.lessons.push(n);
+          setCur(sj.id, ch.id, n.id);
+        }
+        state.openS[sj.id] = true; state.openC[ch.id] = true;
+        saveDraft(); render();
+      });
+  }
+
+  /* ---------- admin login ---------- */
+  function renderLogin(){
+    var tag = document.getElementById('modeTag');
+    tag.textContent = '';
+    tag.append(h('span',{}, 'অ্যাডমিন লগইন'));
+    tag.className = 'tag admin';
+    var main = document.querySelector('main');
+    main.textContent = '';
+    var err = h('p',{class:'err', role:'alert'});
+    var pw = h('input',{id:'pw', type:'password', autocomplete:'current-password', placeholder:'পাসওয়ার্ড'});
+    var f = h('form',{class:'login', onsubmit:async function(e){
+      e.preventDefault();
+      if(!(window.crypto && crypto.subtle)){
+        err.textContent = 'এই ব্রাউজারে লগইন চলছে না। সাইটটি https লিংকে খুলুন।';
+        return;
+      }
+      var hx = await sha256(pw.value);
+      if(hx === ADMIN_HASH){
+        try{sessionStorage.setItem('adminOk', ADMIN_HASH)}catch(x){}
+        location.reload();
+      }else{
+        err.textContent = 'পাসওয়ার্ড ভুল হয়েছে।';
+        pw.select();
+      }
+    }},
+      h('h2',{}, 'অ্যাডমিন লগইন'),
+      h('label',{for:'pw'}, 'পাসওয়ার্ড', pw),
+      err,
+      h('div',{class:'actions'},
+        h('button',{class:'btn primary', type:'submit'}, 'ঢুকুন'),
+        h('button',{class:'btn', type:'button', onclick:function(){location.hash = ''}}, 'শিক্ষার্থী ভিউতে যান'))
+    );
+    main.append(f);
+    pw.focus();
+  }
+
+  /* ---------- boot ---------- */
+  function render(){
+    document.getElementById('brand').textContent = data.siteTitle || 'ক্লাস পোর্টাল';
+    document.title = data.siteTitle || 'ক্লাস পোর্টাল';
+    var tag = document.getElementById('modeTag');
+    tag.textContent = '';
+    tag.append(h('span',{}, admin ? 'অ্যাডমিন মোড' : 'শিক্ষার্থী ভিউ'));
+    tag.className = 'tag' + (admin ? ' admin' : '');
+    renderPlayer(); renderSidebar(); renderDraft();
+  }
+
+  window.addEventListener('hashchange', function(){location.reload()});
+  load().then(function(d){
+    if(wantAdmin && !admin){renderLogin(); return}
+    data = d;
+    var last = null;
+    try{last = localStorage.getItem('last')}catch(e){}
+    var hit = allLessons().filter(function(x){return x.l.id === last})[0];
+    if(hit) setCur(hit.s.id, hit.c.id, hit.l.id);
+    else pickFirst();
+    render();
+  });
+  window.addEventListener('beforeunload', function(){
+    try{if(state.lesson) localStorage.setItem('last', state.lesson)}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
